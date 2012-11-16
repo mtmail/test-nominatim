@@ -3,6 +3,8 @@ import urllib
 import urllib2
 from lettuce import *
 from tidylib import tidy_document
+import json
+from xml.dom.minidom import parseString
 
 @step('Then a HTTP (\d+) is returned')
 def send_request(step, http_code='200'):
@@ -21,16 +23,28 @@ def validate_html_format(step):
 
     document, errors = tidy_document(world.page, options={'char-encoding' : 'utf8'})
     assert(len(errors) == 0), "Errors found in HTML document:\n%s" % errors
-    world.page = document
+    world.results = document
+
 
 @step('Then valid xml is returned')
 def validate_xml_format(step):
     send_request(step)
+    world.results = parseString(world.page)
+
 
 @step('Then valid json is returned')
 def validate_json_format(step):
     send_request(step)
+    world.results = json.loads(world.page)
 
+@step('Then the result is wrapped in function (.*)')
+def check_for_jsonp_wrapper(step, funcname):
+    world.params['format'] = 'json'
+    send_request(step)
+    assert world.page.startswith(funcname + '(')
+    assert world.page.endswith(')')
+    world.results = json.loads(world.page[(len(funcname)+1):-1])
+    
 
 @step('Then (.+) (\d+) result is returned')
 def validate_result_number(step, operator, number):

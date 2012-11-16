@@ -3,15 +3,13 @@ Feature: Reverse geocoding
 
     Scenario Outline: Simple reverse-geocoding
         When looking up coordinates <lat>,<lon>
-        Then a HTTP 200 is returned
-        Using format html
-        Then a HTTP 200 is returned
+        Then valid xml is returned
         Using format xml 
-        Then a HTTP 200 is returned
+        Then valid xml is returned
         Using format json
-        Then a HTTP 200 is returned
+        Then valid json is returned
         Using format jsonv2
-        Then a HTTP 200 is returned
+        Then valid json is returned
 
     Examples:
      | lat      | lon
@@ -20,24 +18,25 @@ Feature: Reverse geocoding
      | -79.34   | 23.5
      | 0.23     | -178.555
 
+    Scenario: Wrapping of legal jsonp requests
+        When looking up coordinates 67.3245,0.456
+        With parameters "json_callback=foo&format=json"
+        Then the result is wrapped in function foo
 
     Scenario Outline: Reverse-geodocing with paramters
         When looking up coordinates 67.3245,0.456
         With parameters "<parameters>"
-        Then a HTTP 200 is returned
-        Using format html
-        Then a HTTP 200 is returned
+        Then valid xml is returned
         Using format xml 
-        Then a HTTP 200 is returned
+        Then valid xml is returned
         Using format json
-        Then a HTTP 200 is returned
+        Then valid json is returned
         Using format jsonv2
-        Then a HTTP 200 is returned
+        Then valid json is returned
 
    Examples:
      | parameters
      | addressdetails=1
      | polygon=1
-     | json_callback=foobar
      | accept-language=de,en
      | zoom=10

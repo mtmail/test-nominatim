@@ -7,11 +7,11 @@ Feature: Geocoding
         Using format html
         Then valid html is returned
         Using format xml 
-        Then a HTTP 200 is returned
+        Then valid xml is returned
         Using format json
-        Then a HTTP 200 is returned
+        Then valid json is returned
         Using format jsonv2
-        Then a HTTP 200 is returned
+        Then valid json is returned
 
     Examples:
      | query
@@ -22,6 +22,10 @@ Feature: Geocoding
      | 東京都
      | hotels in nantes
 
+    Scenario: Wrapping of legal jsonp requests
+        When searching for "Tokyo"
+        With parameters "json_callback=foo&format=json"
+        Then the result is wrapped in function foo
 
     Scenario Outline: Searches with different parameters
         When searching for "Manchester"
@@ -29,11 +33,11 @@ Feature: Geocoding
         Using format html
         Then valid html is returned
         Using format xml 
-        Then a HTTP 200 is returned
+        Then valid xml is returned
         Using format json
-        Then a HTTP 200 is returned
+        Then valid json is returned
         Using format jsonv2
-        Then a HTTP 200 is returned
+        Then valid json is returned
 
     Examples:
      | parameters
@@ -43,7 +47,6 @@ Feature: Geocoding
      | polygon_kml=1
      | polygon_geojson=1
      | polygon_svg=1
-     | json_callback=foobar
      | accept-language=de,en
      | countrycodes=uk,ir
      | viewbox=12.59,52.78,14.19,52.25
