@@ -3,7 +3,7 @@ Feature: Object details
 
     Scenario: Details via place id
         When looking up place 1758375
-        Then a HTTP 200 is returned
+        Then valid html is returned
 
 
     Scenario Outline: Details via OSM id
