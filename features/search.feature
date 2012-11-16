@@ -60,4 +60,4 @@ Feature: Geocoding
      Scenario: limit=1 returns something
         When searching for "Hamburg"
         With parameters "limit=1"
-        Then at least 1 result is returned
+        Then exactly 1 result is returned

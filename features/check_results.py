@@ -46,7 +46,23 @@ def check_for_jsonp_wrapper(step, funcname):
     world.results = json.loads(world.page[(len(funcname)+1):-1])
     
 
-@step('Then (.+) (\d+) result is returned')
+@step('Then (.+) (\d+) results? is returned')
 def validate_result_number(step, operator, number):
+    number = int(number)
     world.params['format'] = 'json'
     validate_json_format(step)
+    numres = len(world.results)
+    if operator == 'less than':
+        comp = numres < number
+    elif operator == 'more than':
+        comp = numres > number
+    elif operator == 'exactly':
+        comp = numres == number
+    elif operator == 'at least':
+        comp = numres >= number
+    elif operator == 'at most':
+        comp = numres <= number
+    else:
+        raise Error("unknown operator")
+
+    assert comp, "Bad number of results: expected %s %d, got %d." % (operator, number, numres)
