@@ -30,3 +30,7 @@ def add_parameters(step, paramstring):
 def set_format(step, formatstring):
     world.params['format'] = formatstring
 
+@step('Using language "(.*)"')
+def set_language(step, lang):
+    world.params['accept-language'] = lang
+

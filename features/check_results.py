@@ -66,3 +66,8 @@ def validate_result_number(step, operator, number):
         raise Error("unknown operator")
 
     assert comp, "Bad number of results: expected %s %d, got %d." % (operator, number, numres)
+
+@step('Then result (\d+) starts with "(.*)"')
+def validate_display_name_start(step, resnum, result):
+    validate_result_number(step, 'at least', resnum)
+    assert world.results[int(resnum)-1]['display_name'].startswith(result), "Expected result to start with '%s', got '%s'." % (result, world.results[int(resnum)-1]['display_name'])
