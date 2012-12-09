@@ -4,16 +4,19 @@ from lettuce import *
 def setup_call_search(step, query):
     world.requesttype = 'search'
     world.params = {'q' : query.encode('utf8') }
+    world.header = {}
 
 @step('When looking up coordinates ([-\d.]+),([-\d.]+)')
 def setup_call_reverse(step, lat, lon):
     world.requesttype = 'reverse'
     world.params = {'lat' : lat, 'lon' : lon } 
+    world.header = {}
 
 @step('When looking up place (\d+)')
 def setup_call_details_place_id(step, placeid):
     world.requesttype = 'details'
     world.params = { 'place_id' : placeid } 
+    world.header = {}
 
 @step('When looking up osm ([a-z]+) (\d+)')
 def setup_call_details_place_id(step, osmtype, osmid):
@@ -33,4 +36,8 @@ def set_format(step, formatstring):
 @step('Using language "(.*)"')
 def set_language(step, lang):
     world.params['accept-language'] = lang
+
+@step('Using language header "(.*)"')
+def set_language(step, lang):
+    world.header['Accept-Language'] = lang
 
