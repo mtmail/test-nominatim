@@ -71,10 +71,35 @@ def validate_result_number(step, operator, number):
     assert comp, "Bad number of results: expected %s %d, got %d." % (operator, number, numres)
 
 @step('Then result (\d+) starts with "(.*)"')
-def validate_display_name_start(step, resnum, result):
+def run_validate_display_name_start(step, resnum, result):
     validate_result_number(step, 'at least', resnum)
+    validate_display_name_start(step, resnum, result)
+
+@step('And then result (\d+) starts with "(.*)"')
+def validate_display_name_start(step, resnum, result):
     assert world.results[int(resnum)-1]['display_name'].startswith(result), "Expected result to start with '%s', got '%s'." % (result, world.results[int(resnum)-1]['display_name'])
 
+@step('Then result (\d+) is within ([-.\d]+),([-.\d]+),([-.\d]+),([-.\d]+)')
+def run_validate_search_coordinates(step, resnum, latmin, latmax, lonmin, lonmax):
+    validate_result_number(step, 'at least', resnum)
+    validate_search_coordinates(step, resnum, latmin, latmax, lonmin, lonmax)
+
+@step('And then result (\d+) is within ([-.\d]+),([-.\d]+),([-.\d]+),([-.\d]+)')
+def validate_search_coordinates(step, resnum, latmin, latmax, lonmin, lonmax):
+    res = world.results[int(resnum)-1]
+    lat = float(res['lat'])
+    lon = float(res['lon'])
+    isinside = lat >= float(latmin) and lat <= float(latmax) and lon >= float(lonmin) and lon <= float(lonmax)
+    assert isinside, "Coordinates (%f,%f) outside bounding box." % (lat, lon)
+
+@step('Then result (\d+) is of type (\w+)')
+def run_and_validate_osm_type(step, resnum, osmtype):
+    validate_result_number(step, 'at least', resnum)
+    validate_osm_type(step, resnum, osmtype)
+
+@step('And then result (\d+) is of type (\w+)')
+def validate_osm_type(step, resnum, osmtype):
+    assert osmtype == world.results[int(resnum)-1]['osm_type']
 
 ########## For reverse only ###############
 
