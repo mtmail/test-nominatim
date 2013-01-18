@@ -20,8 +20,24 @@ Feature: Geocoding
         When searching for "Rosalind St 4, Sydney"
         Then at least 1 result is returned
 
+    Scenario: exclude previous searches
+        When searching for "Main St"
+        Then a second search excludes previous results
+
     # bug https://trac.openstreetmap.org/ticket/4683
     Scenario: limit=1 returns something
         When searching for "Hamburg"
         With parameters "limit=1"
         Then exactly 1 result is returned
+
+    # bug https://trac.openstreetmap.org/ticket/3749
+    Scenario: reverse order query with preceeding country
+        When searching for "Germany, 97816 Lohr a. Main, Valentin-Peter-Straße"
+        Using language "de"
+        Then result 1 contains country "Deutschland"
+
+    # bug https://trac.openstreetmap.org/ticket/4674
+    Scenario: respect excluded places for POI searches
+        When searching for "tankstelle"
+        With parameters "viewbox=6.611261755981432,51.24659496674299,6.779318244018607,51.150214624895234&bounded=1"
+        Then a second search excludes previous results

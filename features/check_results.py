@@ -101,6 +101,24 @@ def run_and_validate_osm_type(step, resnum, osmtype):
 def validate_osm_type(step, resnum, osmtype):
     assert osmtype == world.results[int(resnum)-1]['osm_type']
 
+@step('Then result (\d+) contains (.*) "(.*)"')
+def validate_search_address(step, resnum, addresstype, addressvalue):
+    world.params['addressdetails'] = '1'
+    validate_result_number(step, 'at least', resnum)
+    res = world.results[int(resnum)-1]
+    assert addresstype in res['address'], "Expected address to contain '%s'. Got %s." % (addresstype, world.results['address'])
+    assert res['address'][addresstype] == addressvalue, "Expected address '%s' to be '%s'. Got %s." % (addresstype, addressvalue, world.results['address'][addresstype])
+
+
+@step(u'Then a second search excludes previous results')
+def validate_excluded_places(step):
+    validate_result_number(step, 'at least', 1)
+    oldplaceset = set([a['place_id'] for a in world.results])
+    world.params['exclude_place_ids'] = ','.join(oldplaceset)
+    validate_result_number(step, 'at least', 1)
+    for place in world.results:
+        assert place['place_id'] not in oldplaceset, "Place %s appeared in both searches" % place['place_id']
+
 ########## For reverse only ###############
 
 @step('Then a valid address is returned')
@@ -113,3 +131,4 @@ def validate_reverse_address(step, addresstype, addressvalue):
     validate_reverse_hasresult(step)
     assert addresstype in world.results['address'], "Expected address to contain '%s'. Got %s." % (addresstype, world.results['address'])
     assert world.results['address'][addresstype] == addressvalue, "Expected address '%s' to be '%s'. Got %s." % (addresstype, addressvalue, world.results['address'][addresstype])
+
