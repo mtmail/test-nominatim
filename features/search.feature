@@ -24,6 +24,11 @@ Feature: Geocoding
         When searching for "Main St"
         Then a second search excludes previous results
 
+    Scenario: search term is actually contained in result
+        When searching for "Main St, London"
+        Then result 1 contains "Main"
+        And then result 1 contains "London"
+
     # bug https://trac.openstreetmap.org/ticket/4683
     Scenario: limit=1 returns something
         When searching for "Hamburg"
