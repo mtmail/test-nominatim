@@ -3,14 +3,14 @@ Feature: Result order for Geocoding
 
     Scenario Outline: city order in street search
         When searching for "<street>, <city>"
-        Then result 1 contains city "<city>"
+        Then result 1 contains <type> "<city>"
 
     Examples:
-        | city            | street
-        | Zürich          | Rigistr
-        | Karlsruhe       | Lessingstr
-        | München         | Karlstr
-        | Praha           | Dlouhá
+        | type | city            | street
+        | city | Zürich          | Rigistr
+        | city | Karlsruhe       | Lessingstr
+        | county | München         | Karlstr
+        | city | Praha           | Dlouhá
 
     Scenario Outline: use more important city in street search
         When searching for "<street>, <city>"
