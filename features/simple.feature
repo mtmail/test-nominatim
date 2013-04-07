@@ -24,6 +24,38 @@ Feature: Simple Tests
      | hotels in nantes
      | xywxkrf
 
+    Scenario: Empty XML search
+        Given format xml
+        When searching for "xnznxvcx"
+        Then valid search xml is returned
+
+    @Fail
+    Scenario: Empty XML search with viewbox
+        Given format xml
+        And parameter viewbox as "12,34.13,77,45"
+        When searching for "xnznxvcx"
+        Then valid search xml is returned
+
+    Scenario: Empty XML search with polygon values
+        Given format xml
+        And parameter polygon as "<polyval>"
+        When searching for "xnznxvcx"
+        Then valid search xml is returned
+        And xml header contains attribute polygon as "<result>"
+
+    Examples:
+     | result | polyval
+     | false  | 0
+     | true   | 1
+     | true   | True
+     | true   | true
+     | true   | false
+     | true   | FALSE
+     | true   | yes
+     | true   | no
+     | true   | '; delete from foobar; select '
+
+
     Scenario: Wrapping of legal jsonp requests
         When searching for "Tokyo"
         With parameters "json_callback=foo&format=json"

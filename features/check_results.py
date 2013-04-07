@@ -6,6 +6,18 @@ from tidylib import tidy_document
 import json
 from xml.dom.minidom import parseString
 
+@step('xml header does not contain attribute (\w+)')
+def check_xml_header_has_not_Attribute(step, attr):
+    assert not world.result.hasAttribute(attr)
+
+@step('xml header contains attribute (\w+) as "(.*)"')
+def check_xml_header_has_attribute(step, attr, value):
+    assert world.results.hasAttribute(attr)
+    assert world.results.getAttribute(attr) == value, \
+       "Unexpected value for header attribute '%s': %s" % (attr, value)
+
+############### OLD STUFF ###############################################
+
 @step('Then a HTTP (\d+) is returned')
 def send_request(step, http_code='200'):
     data = urllib.urlencode(world.params)
@@ -17,6 +29,8 @@ def send_request(step, http_code='200'):
     else:
         with assert_raises_regexp(urllib2.HTTPError, http_code):
             urllib2.urlopen(req)
+    world.params = {}
+    world.header = {}
 
 @step('Then valid html is returned')
 def validate_html_format(step):
@@ -30,7 +44,7 @@ def validate_html_format(step):
 @step('Then valid xml is returned')
 def validate_xml_format(step):
     send_request(step)
-    world.results = parseString(world.page)
+    world.results = parseString(world.page).documentElement
 
 
 @step('Then valid json is returned')
@@ -45,7 +59,7 @@ def check_for_jsonp_wrapper(step, funcname):
     assert world.page.startswith(funcname + '(')
     assert world.page.endswith(')')
     world.results = json.loads(world.page[(len(funcname)+1):-1])
-    
+
 
 ########### For search only #################
 
