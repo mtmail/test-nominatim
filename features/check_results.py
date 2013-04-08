@@ -1,13 +1,14 @@
 from nose.tools import assert_raises_regexp
 import urllib
 import urllib2
+import urlparse
 from lettuce import *
 from tidylib import tidy_document
 import json
 from xml.dom.minidom import parseString
 
 @step('xml header does not contain attribute (\w+)')
-def check_xml_header_has_not_Attribute(step, attr):
+def check_xml_header_has_not_attribute(step, attr):
     assert not world.result.hasAttribute(attr)
 
 @step('xml header contains attribute (\w+) as "(.*)"')
@@ -15,6 +16,22 @@ def check_xml_header_has_attribute(step, attr, value):
     assert world.results.hasAttribute(attr)
     assert world.results.getAttribute(attr) == value, \
        "Unexpected value for header attribute '%s': %s" % (attr, value)
+
+@step('xml more url consists of')
+def check_xml_more_url_contains(step):
+    assert world.results.hasAttribute('more_url')
+    moreurl = urlparse.urlparse(world.results.getAttribute('more_url'))
+    params = urlparse.parse_qs(moreurl.query)
+    for line in step.hashes:
+        assert line['param'] in params, "Missing parameter %s" % line['param']
+        paramvals = params[line['param']]
+        assert(len(paramvals) == 1), \
+           "Too many values for %s: %s" % (line['param'], paramvals)
+        assert paramvals[0] == line['value'], \
+           "Unexpected value for %s: %s" % (line['param'], paramvals[0])
+        del params[line['param']]
+    assert not params, "Too many parameters: %s" % str(params)
+    
 
 ############### OLD STUFF ###############################################
 

@@ -28,6 +28,23 @@ Feature: Simple Tests
         Given format xml
         When searching for "xnznxvcx"
         Then valid search xml is returned
+        And xml header contains attribute querystring as "xnznxvcx"
+        And xml header contains attribute polygon as "false"
+        And xml more url consists of
+        | param   | value
+        | format  | xml
+        | q       | xnznxvcx
+
+    Scenario: Empty XML search with special XML characters
+        Given format xml
+        When searching for "xfdghn&zxn"xvbyx<vxx>cssdex"
+        Then valid search xml is returned
+        And xml header contains attribute querystring as "xfdghn&zxn"xvbyx<vxx>cssdex"
+        And xml header contains attribute polygon as "false"
+        And xml more url consists of
+        | param   | value
+        | format  | xml
+        | q       | xfdghn&zxn"xvbyx<vxx>cssdex
 
     @Fail
     Scenario: Empty XML search with viewbox
@@ -35,6 +52,10 @@ Feature: Simple Tests
         And parameter viewbox as "12,34.13,77,45"
         When searching for "xnznxvcx"
         Then valid search xml is returned
+        And xml header contains attribute querystring as "xnznxvcx"
+        And xml header contains attribute polygon as "false"
+        And xml header contains attribute viewbox as "12,34.13,77,45"
+
 
     Scenario: Empty XML search with polygon values
         Given format xml
