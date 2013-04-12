@@ -31,6 +31,13 @@ def check_xml_more_url_contains(step):
            "Unexpected value for %s: %s" % (line['param'], paramvals[0])
         del params[line['param']]
     assert not params, "Too many parameters: %s" % str(params)
+
+@step('xml contains a viewbox of [\d.]+,[\d.]+,[\d.]+,[\d.]+')
+def check_xmk_viewbox(step, minlat, minlon, maxlat, maxlon):
+    assert world.results.hasAttribute('viewbox')
+    parts = world.results.getAttribute('viewbox')
+    assert len(parts) == 4
+
     
 
 ############### OLD STUFF ###############################################
@@ -49,33 +56,9 @@ def send_request(step, http_code='200'):
     world.params = {}
     world.header = {}
 
-@step('Then valid html is returned')
-def validate_html_format(step):
-    send_request(step)
-
-    document, errors = tidy_document(world.page, options={'char-encoding' : 'utf8'})
-    assert(len(errors) == 0), "Errors found in HTML document:\n%s" % errors
-    world.results = document
-
-
-@step('Then valid xml is returned')
-def validate_xml_format(step):
-    send_request(step)
-    world.results = parseString(world.page).documentElement
-
-
-@step('Then valid json is returned')
-def validate_json_format(step):
-    send_request(step)
-    world.results = json.loads(world.page)
-
-@step('Then the result is wrapped in function (.*)')
-def check_for_jsonp_wrapper(step, funcname):
-    world.params['format'] = 'json'
-    send_request(step)
-    assert world.page.startswith(funcname + '(')
-    assert world.page.endswith(')')
-    world.results = json.loads(world.page[(len(funcname)+1):-1])
+@step('Then valid (.*) is returned')
+def validate_format(step, fmt):
+    world.call()
 
 
 ########### For search only #################
@@ -84,7 +67,7 @@ def check_for_jsonp_wrapper(step, funcname):
 def validate_result_number(step, operator, number):
     number = int(number)
     world.params['format'] = 'json'
-    validate_json_format(step)
+    world.call()
     numres = len(world.results)
     if operator == 'less than':
         comp = numres < number
@@ -165,7 +148,8 @@ def validate_excluded_places(step):
 @step('Then a valid address is returned')
 def validate_reverse_hasresult(step):
     world.params['format'] = 'json'
-    validate_json_format(step)
+    world.call()
+    assert 'address' in world.results
 
 @step('Then the address contains (.*) "(.*)"')
 def validate_reverse_address(step, addresstype, addressvalue):

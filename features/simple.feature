@@ -25,8 +25,8 @@ Feature: Simple Tests
      | xywxkrf
 
     Scenario: Empty XML search
-        Given format xml
         When searching for "xnznxvcx"
+        Given format xml
         Then valid search xml is returned
         And xml header contains attribute querystring as "xnznxvcx"
         And xml header contains attribute polygon as "false"
@@ -36,8 +36,8 @@ Feature: Simple Tests
         | q       | xnznxvcx
 
     Scenario: Empty XML search with special XML characters
-        Given format xml
         When searching for "xfdghn&zxn"xvbyx<vxx>cssdex"
+        Given format xml
         Then valid search xml is returned
         And xml header contains attribute querystring as "xfdghn&zxn"xvbyx<vxx>cssdex"
         And xml header contains attribute polygon as "false"
@@ -46,11 +46,10 @@ Feature: Simple Tests
         | format  | xml
         | q       | xfdghn&zxn"xvbyx<vxx>cssdex
 
-    @Fail
     Scenario: Empty XML search with viewbox
+        When searching for "xnznxvcx"
         Given format xml
         And parameter viewbox as "12,34.13,77,45"
-        When searching for "xnznxvcx"
         Then valid search xml is returned
         And xml header contains attribute querystring as "xnznxvcx"
         And xml header contains attribute polygon as "false"
@@ -58,9 +57,9 @@ Feature: Simple Tests
 
 
     Scenario: Empty XML search with polygon values
+        When searching for "xnznxvcx"
         Given format xml
         And parameter polygon as "<polyval>"
-        When searching for "xnznxvcx"
         Then valid search xml is returned
         And xml header contains attribute polygon as "<result>"
 
@@ -80,7 +79,7 @@ Feature: Simple Tests
     Scenario: Wrapping of legal jsonp requests
         When searching for "Tokyo"
         With parameters "json_callback=foo&format=json"
-        Then the result is wrapped in function foo
+        Then valid json is returned
 
     Scenario Outline: Searches with different parameters
         When searching for "Manchester"
@@ -130,7 +129,7 @@ Feature: Simple Tests
     Scenario: Wrapping of legal jsonp requests
         When looking up coordinates 67.3245,0.456
         With parameters "json_callback=foo&format=json"
-        Then the result is wrapped in function foo
+        Then valid json is returned
 
     Scenario Outline: Reverse-geodocing with paramters
         When looking up coordinates 67.3245,0.456

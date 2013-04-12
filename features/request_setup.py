@@ -10,11 +10,12 @@ from xml.dom.minidom import parseString
 def setup_request(feature):
     world.params = {}
     world.header = {}
+    world.results = None
 
 
 @world.absorb
 def call(http_code='200'):
-    if not world.params:
+    if world.results:
         return
 
     data = urllib.urlencode(world.params)
@@ -27,7 +28,7 @@ def call(http_code='200'):
         with assert_raises_regexp(urllib2.HTTPError, http_code):
             urllib2.urlopen(req)
 
-    fmt = world.params.get('format', 'html')
+    fmt = world.params.get('format', 'xml' if world.requesttype == 'reverse' else 'html')
     if fmt == 'html':
         document, errors = tidy_document(page, 
                              options={'char-encoding' : 'utf8'})
@@ -36,12 +37,13 @@ def call(http_code='200'):
     elif fmt == 'xml':
         world.results = parseString(page).documentElement
     else:
+        if 'json_callback' in world.params:
+            func = world.params['json_callback']
+            assert page.startswith(func + '(')
+            assert page.endswith(')')
+            page = page[(len(func)+1):-1]
         world.results = json.loads(page)
 
-    world.request = { 'params' : world.params,
-                      'header' : world.header }
-    world.header = {}
-    world.request = {}
 
 
 # possible actions
@@ -49,22 +51,26 @@ def call(http_code='200'):
 @step('searching for "(.*)"')
 def setup_call_search(step, query):
     world.requesttype = 'search'
+    world.params = {}
     world.params['q'] = query.encode('utf8')
 
 @step('looking up coordinates ([-\d.]+),([-\d.]+)')
 def setup_call_reverse(step, lat, lon):
     world.requesttype = 'reverse'
+    world.params = {}
     world.params['lat'] = lat
     world.params['lon'] = lon 
 
 @step('looking up place (\d+)')
 def setup_call_details_place_id(step, placeid):
     world.requesttype = 'details'
+    world.params = {}
     world.params['place_id'] = placeid 
 
 @step('looking up osm ([a-z]+) (\d+)')
 def setup_call_details_place_id(step, osmtype, osmid):
     world.requesttype = 'details'
+    world.params = {}
     world.params['osmtype'] = osmtype
     world.params['osmid'] = osmid 
 
@@ -87,6 +93,7 @@ def add_parameters(step, paramstring):
     for substr in paramstring.split('&'):
         key, val = substr.split('=')
         world.params[key.encode('utf8')] = val.encode('utf8')
+    world.results = None
 
 @step('Using format (\S*)')
 def set_format(step, formatstring):
