@@ -11,14 +11,16 @@ Feature: Simple Tests
         Using format xml
         Then valid search xml is returned
         Using format json
-        Then valid json is returned
+        Then valid search json is returned
         Using format jsonv2
-        Then valid json is returned
+        Then valid search json is returned
 
     Examples:
      | parameter        | value
      | addressdetails   | 1
      | addressdetails   | 0
+     | polygon          | 1
+     | polygon          | 0
      | polygon_text     | 1
      | polygon_text     | 0
      | polygon_kml      | 1
@@ -90,7 +92,7 @@ Feature: Simple Tests
         And xml contains a viewbox of 12,34.13,77,45
 
 
-    Scenario: Empty XML search with polygon values
+    Scenario Outline: Empty XML search with polygon values
         When searching for "xnznxvcx"
         Given format xml
         And parameter polygon as "<polyval>"
@@ -109,6 +111,12 @@ Feature: Simple Tests
      | true   | no
      | true   | '; delete from foobar; select '
 
+    Scenario: Empty XML search with exluded place ids
+        When searching for "jghrleoxsbwjer"
+        Given format xml
+        And parameter exclude_place_ids as "123,76,342565"
+        Then valid search xml is returned
+        And xml header contains attribute exclude_place_ids as "123,76,342565"
 
     Scenario Outline: Wrapping of legal jsonp search requests
         When searching for "Tokyo"
@@ -146,4 +154,14 @@ Feature: Simple Tests
         Then valid search xml is returned
         Using format html
         Then valid html is returned
+
+     Scenario: Empty JSON search
+        When searching for "YHlERzzx"
+        Given format json
+        Then exactly 0 results are returned
+
+     Scenario: Empty JSONv2 search
+        When searching for "Flubb XdfESSaZx"
+        Given format jsonv2
+        Then exactly 0 results are returned
 

@@ -15,10 +15,10 @@ def search_validate_xml(step):
 @step('valid search json is returned')
 def search_validate_json(step):
     world.call()
-    assert isinstance(world.results, list)
+    assert isinstance(world.results, list), "Result is not a list, it is %s" % type(world.results)
 
 
-@step('([\w ]+) (\d+) results? (?:is|are) returned')
+@step('(less than|more than|exactly|at least|at most) (\d+) results? (?:is|are) returned')
 def validate_result_number(step, operator, number):
     world.params['format'] = 'json'
     step.given('valid search json is returned')
@@ -35,7 +35,7 @@ def validate_result_number(step, operator, number):
     elif operator == 'at most':
         comp = numres <= number
     else:
-        raise Error("unknown operator")
+        raise Exception("unknown operator '%s'" % operator)
 
     assert comp, "Bad number of results: expected %s %d, got %d." % (operator, number, numres)
 
