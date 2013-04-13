@@ -1,3 +1,4 @@
+from nose.tools import *
 from lettuce import *
 import urllib
 import urllib2
@@ -14,27 +15,28 @@ def setup_request(feature):
 
 
 @world.absorb
-def call(http_code='200'):
+def call():
     if world.results:
         return
 
     data = urllib.urlencode(world.params)
     req = urllib2.Request(url="%s/%s?%s" % (world.base_url, world.requesttype, data),
                           headers=world.header)
-    if http_code == '200':
-        fd = urllib2.urlopen(req)
-        page = fd.read()
-    else:
-        with assert_raises_regexp(urllib2.HTTPError, http_code):
-            urllib2.urlopen(req)
+    fd = urllib2.urlopen(req)
+    page = fd.read()
 
     fmt = world.params.get('format', 'xml' if world.requesttype == 'reverse' else 'html')
+    pageinfo = fd.info()
+    assert_equal('utf-8', pageinfo.getparam('charset').lower())
+    pagetype = pageinfo.gettype()
     if fmt == 'html':
+        assert_equals('text/html', pagetype)
         document, errors = tidy_document(page, 
                              options={'char-encoding' : 'utf8'})
         assert(len(errors) == 0), "Errors found in HTML document:\n%s" % errors
         world.results = document
     elif fmt == 'xml':
+        assert_equals('text/xml', pagetype)
         world.results = parseString(page).documentElement
     else:
         if 'json_callback' in world.params:
@@ -42,6 +44,9 @@ def call(http_code='200'):
             assert page.startswith(func + '(')
             assert page.endswith(')')
             page = page[(len(func)+1):-1]
+            assert_equals('application/javascript', pagetype)
+        else:
+            assert_equals('application/json', pagetype)
         world.results = json.loads(page)
 
 
@@ -82,8 +87,8 @@ def set_format(step, formatstring):
     world.params['format'] = formatstring
     world.results = None
 
-@step(u'parameter (\w+) as "(.+)"')
-def set_viewbox(step, param, value):
+@step('parameter ([\w-]+) as "([^"]*)"')
+def set_general_parameter(step, param, value):
     world.params[param] = value
 
 ########## OLD STEPS

@@ -1,14 +1,45 @@
 Feature: Simple Tests
-    Simple tests for internal server errors.
+    Simple tests for internal server errors and response format.
     These tests should pass on any Nominatim installation.
+
+    Scenario Outline: Testing different parameters
+        When searching for "Manchester"
+        Given parameter <parameter> as "<value>"
+        Then valid html is returned
+        Using format html
+        Then valid html is returned
+        Using format xml
+        Then valid search xml is returned
+        Using format json
+        Then valid json is returned
+        Using format jsonv2
+        Then valid json is returned
+
+    Examples:
+     | parameter        | value
+     | addressdetails   | 1
+     | addressdetails   | 0
+     | polygon_text     | 1
+     | polygon_text     | 0
+     | polygon_kml      | 1
+     | polygon_kml      | 0
+     | polygon_geojson  | 1
+     | polygon_geojson  | 0
+     | polygon_svg      | 1
+     | accept-language  | de,en
+     | countrycodes     | uk,ir
+     | bounded          | 1
+     | bounded          | 0
+     | exclude_place_ids| 385252,1234515
+     | limit            | 1000
+     | dedupe           | 1
+     | dedupe           | 0
 
     Scenario Outline: Simple Searches
         When searching for "<query>"
         Then valid html is returned
         Using format html
         Then valid html is returned
-        Using format xml 
-        Then valid xml is returned
         Using format json
         Then valid json is returned
         Using format jsonv2
@@ -76,43 +107,48 @@ Feature: Simple Tests
      | true   | '; delete from foobar; select '
 
 
-    Scenario: Wrapping of legal jsonp requests
+    Scenario Outline: Wrapping of legal jsonp search requests
         When searching for "Tokyo"
-        With parameters "json_callback=foo&format=json"
-        Then valid json is returned
-
-    Scenario Outline: Searches with different parameters
-        When searching for "Manchester"
-        With parameters "<parameters>"
-        Using format html
-        Then valid html is returned
-        Using format xml 
-        Then valid xml is returned
-        Using format json
-        Then valid json is returned
-        Using format jsonv2
+        Given format json
+        And parameter json_callback as "<data>"
         Then valid json is returned
 
     Examples:
-     | parameters
-     | addressdetails=1
-     | polygon=1
-     | polygon_text=1
-     | polygon_kml=1
-     | polygon_geojson=1
-     | polygon_svg=1
-     | accept-language=de,en
-     | countrycodes=uk,ir
-     | viewbox=12.59,52.78,14.19,52.25
-     | bounded=1
-     | exclude_place_ids=385252,1234515
-     | limit=1000
-     | dedupe=1
+     | data
+     | foo
+     | FOO
+     | __world
+     | $me
+     | m1[4]
+     | d_r[$d]
+
+    Scenario Outline: Wrapping of illegal jsonp search requests
+        When searching for "Tokyo"
+        Given format json
+        And parameter json_callback as "<data>"
+        Then a HTTP 400 is returned
+
+    Examples:
+      | data
+      | 1asd
+      | bar(foo)
+      | XXX['bad']
+      | foo; evil
+
+    Scenario Outline: Ignore jsonp parameter for anything but json
+        When searching for "Malibu"
+        Given parameter json_callback as "234"
+        Then valid html is returned
+        Using format xml
+        Then valid search xml is returned
+        Using format html
+        Then valid html is returned
+
 
     Scenario Outline: Simple reverse-geocoding
         When looking up coordinates <lat>,<lon>
         Then valid xml is returned
-        Using format xml 
+        Using format xml
         Then valid xml is returned
         Using format json
         Then valid json is returned
@@ -135,7 +171,7 @@ Feature: Simple Tests
         When looking up coordinates 67.3245,0.456
         With parameters "<parameters>"
         Then valid xml is returned
-        Using format xml 
+        Using format xml
         Then valid xml is returned
         Using format json
         Then valid json is returned

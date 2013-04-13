@@ -7,6 +7,21 @@ from tidylib import tidy_document
 import json
 from xml.dom.minidom import parseString
 
+
+@step('a HTTP (\d+) is returned')
+def send_and_check_for_error_code(step, http_code='200'):
+    data = urllib.urlencode(world.params)
+    req = urllib2.Request(url="%s/%s?%s" % (world.base_url, world.requesttype, data),
+                          headers=world.header)
+    if http_code == '200':
+        fd = urllib2.urlopen(req)
+        page = fd.read()
+    else:
+        with assert_raises_regexp(urllib2.HTTPError, http_code):
+            urllib2.urlopen(req)
+
+###### XML format in general ################################
+
 @step('xml header does not contain attribute (\w+)')
 def check_xml_header_has_not_attribute(step, attr):
     assert_false(world.result.hasAttribute(attr))
@@ -42,21 +57,7 @@ def check_xml_viewbox(step, *attr):
 
 ############### OLD STUFF ###############################################
 
-@step('Then a HTTP (\d+) is returned')
-def send_request(step, http_code='200'):
-    data = urllib.urlencode(world.params)
-    req = urllib2.Request(url="%s/%s?%s" % (world.base_url, world.requesttype, data),
-                          headers=world.header)
-    if http_code == '200':
-        fd = urllib2.urlopen(req)
-        world.page = fd.read()
-    else:
-        with assert_raises_regexp(urllib2.HTTPError, http_code):
-            urllib2.urlopen(req)
-    world.params = {}
-    world.header = {}
-
-@step('Then valid (.*) is returned')
+@step('Then valid (\w*) is returned')
 def validate_format(step, fmt):
     world.call()
 
