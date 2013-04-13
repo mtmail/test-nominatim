@@ -53,7 +53,7 @@ Feature: Simple Tests
         Then valid search xml is returned
         And xml header contains attribute querystring as "xnznxvcx"
         And xml header contains attribute polygon as "false"
-        And xml header contains attribute viewbox as "12,34.13,77,45"
+        And xml contains a viewbox of 12,34.13,77,45
 
 
     Scenario: Empty XML search with polygon values

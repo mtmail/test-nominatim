@@ -1,4 +1,4 @@
-from nose.tools import assert_raises_regexp
+from nose.tools import *
 import urllib
 import urllib2
 import urlparse
@@ -9,34 +9,34 @@ from xml.dom.minidom import parseString
 
 @step('xml header does not contain attribute (\w+)')
 def check_xml_header_has_not_attribute(step, attr):
-    assert not world.result.hasAttribute(attr)
+    assert_false(world.result.hasAttribute(attr))
 
 @step('xml header contains attribute (\w+) as "(.*)"')
 def check_xml_header_has_attribute(step, attr, value):
-    assert world.results.hasAttribute(attr)
-    assert world.results.getAttribute(attr) == value, \
-       "Unexpected value for header attribute '%s': %s" % (attr, value)
+    assert_true(world.results.hasAttribute(attr))
+    assert_true(world.results.getAttribute(attr), value)
 
 @step('xml more url consists of')
 def check_xml_more_url_contains(step):
-    assert world.results.hasAttribute('more_url')
+    assert_true(world.results.hasAttribute('more_url'))
     moreurl = urlparse.urlparse(world.results.getAttribute('more_url'))
     params = urlparse.parse_qs(moreurl.query)
     for line in step.hashes:
-        assert line['param'] in params, "Missing parameter %s" % line['param']
+        assert_true(line['param'] in params, "Missing parameter %s" % line['param'])
         paramvals = params[line['param']]
-        assert(len(paramvals) == 1), \
-           "Too many values for %s: %s" % (line['param'], paramvals)
-        assert paramvals[0] == line['value'], \
-           "Unexpected value for %s: %s" % (line['param'], paramvals[0])
+        assert_equal(len(paramvals), 1)
+        assert_equal(paramvals[0], line['value'])
         del params[line['param']]
-    assert not params, "Too many parameters: %s" % str(params)
+    assert_false(params)
 
-@step('xml contains a viewbox of [\d.]+,[\d.]+,[\d.]+,[\d.]+')
-def check_xmk_viewbox(step, minlat, minlon, maxlat, maxlon):
-    assert world.results.hasAttribute('viewbox')
-    parts = world.results.getAttribute('viewbox')
-    assert len(parts) == 4
+@step(r'xml contains a viewbox of ([-\d.]+),([-\d.]+),([-\d.]+),([-\d.]+)')
+def check_xml_viewbox(step, *attr):
+    assert_true(world.results.hasAttribute('viewbox'))
+    parts = world.results.getAttribute('viewbox').split(',')
+    assert_equal(len(parts), 4)
+    for i in range(4):
+        assert_almost_equal(float(parts[i]), float(attr[i]))
+
 
     
 
