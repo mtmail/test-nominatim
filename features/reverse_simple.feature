@@ -5,11 +5,11 @@ Feature: Simple Reverse Tests
     Scenario Outline: Simple reverse-geocoding
         When looking up coordinates <lat>,<lon>
         Then valid xml is returned
-        Using format xml
+        Given format xml
         Then valid xml is returned
-        Using format json
+        Given format json
         Then valid json is returned
-        Using format jsonv2
+        Given format jsonv2
         Then valid json is returned
 
     Examples:
@@ -28,11 +28,11 @@ Feature: Simple Reverse Tests
         When looking up coordinates 67.3245,0.456
         With parameters "<parameters>"
         Then valid xml is returned
-        Using format xml
+        Given format xml
         Then valid xml is returned
-        Using format json
+        Given format json
         Then valid json is returned
-        Using format jsonv2
+        Given format jsonv2
         Then valid json is returned
 
    Examples:

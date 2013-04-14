@@ -1,6 +1,7 @@
 Feature: Result order for Geocoding
     Testing that importance ordering returns sensible results
 
+    @Fail
     Scenario Outline: city order in street search
         When searching for "<street>, <city>"
         Using format json

@@ -1,4 +1,5 @@
 from lettuce import *
+from nose.tools import *
 
 
 @step('valid search xml is returned')
@@ -39,3 +40,29 @@ def validate_result_number(step, operator, number):
 
     assert comp, "Bad number of results: expected %s %d, got %d." % (operator, number, numres)
 
+
+@step('there are( no)? duplicates')
+def search_check_for_duplicates(step, nodups=None):
+    step.given('at least 1 result is returned')
+    resarr = []
+    for res in world.results:
+        resarr.append((res['osm_type'], res['class'], 
+                        res['type'], res['display_name']))
+    if nodups is None:
+        assert len(resarr) > len(set(resarr))
+    else:
+        assert_equal(len(resarr), len(set(resarr)))
+
+@step('result (\d+) has attributes (\S+)')
+def search_check_for_result_attribute(step, num, attrs):
+    step.given('at least %s results are returned' % num)
+    res = world.results[int(num)-1]
+    for attr in attrs.split(','):
+        assert attr in res, "Attribute %s missing" % attr
+
+@step('result (\d+) has attribute (\S+) as "(.*)"')
+def search_check_for_result_attribute(step, num, attr, value):
+    step.given('at least %s results are returned' % num)
+    res = world.results[int(num)+1]
+    assert attr in res
+    assert_equals(res[attr], value)

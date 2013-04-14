@@ -25,7 +25,9 @@ def call():
     fd = urllib2.urlopen(req)
     page = fd.read()
 
-    fmt = world.params.get('format', 'xml' if world.requesttype == 'reverse' else 'html')
+    fmt = world.params.get('format')
+    if fmt not in ('html', 'xml', 'json', 'jsonv2'):
+        fmt = 'xml' if world.requesttype == 'reverse' else 'html'
     pageinfo = fd.info()
     assert_equal('utf-8', pageinfo.getparam('charset').lower())
     pagetype = pageinfo.gettype()
@@ -90,6 +92,7 @@ def set_format(step, formatstring):
 @step('parameter ([\w-]+) as "([^"]*)"')
 def set_general_parameter(step, param, value):
     world.params[param] = value
+    world.results = None
 
 ########## OLD STEPS
 

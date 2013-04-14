@@ -6,13 +6,13 @@ Feature: Simple Tests
         When searching for "Manchester"
         Given parameter <parameter> as "<value>"
         Then valid html is returned
-        Using format html
+        Given format html
         Then valid html is returned
-        Using format xml
+        Given format xml
         Then valid search xml is returned
-        Using format json
+        Given format json
         Then valid search json is returned
-        Using format jsonv2
+        Given format jsonv2
         Then valid search json is returned
 
     Examples:
@@ -37,14 +37,19 @@ Feature: Simple Tests
      | dedupe           | 1
      | dedupe           | 0
 
+    Scenario: Search with invalid output format
+        When searching for "Berlin"
+        Given format "fd$#"
+        Then valid html is returned
+
     Scenario Outline: Simple Searches
         When searching for "<query>"
         Then valid html is returned
-        Using format html
+        Given format html
         Then valid html is returned
-        Using format json
+        Given format json
         Then valid json is returned
-        Using format jsonv2
+        Given format jsonv2
         Then valid json is returned
 
     Examples:
@@ -150,9 +155,9 @@ Feature: Simple Tests
         When searching for "Malibu"
         Given parameter json_callback as "234"
         Then valid html is returned
-        Using format xml
+        Given format xml
         Then valid search xml is returned
-        Using format html
+        Given format html
         Then valid html is returned
 
      Scenario: Empty JSON search
