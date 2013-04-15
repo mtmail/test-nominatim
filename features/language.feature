@@ -25,6 +25,16 @@ Feature: Localization of search results
         Using language "de,en"
         Then result 1 starts with "Deutschland"
 
+    Scenario: Search - http accept language header fallback
+        When searching for "Deutschland"
+        Using language header "fr-ca,en-ca;q=0.5"
+        Then result 1 starts with "Allemagne"
+
+    Scenario: Search - http accept language header fallback (upper case)
+        When searching for "Deutschland"
+        Using language header "fr-FR;q=0.8,en-ca;q=0.5"
+        Then result 1 starts with "Allemagne"
+
     Scenario: Reverse - default language
         When looking up coordinates 48.13921,11.57328
         Then the address contains county "München"
