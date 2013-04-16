@@ -48,6 +48,7 @@ def search_check_for_duplicates(step, nodups=None):
     for res in world.results:
         resarr.append((res['osm_type'], res['class'], 
                         res['type'], res['display_name']))
+
     if nodups is None:
         assert len(resarr) > len(set(resarr))
     else:

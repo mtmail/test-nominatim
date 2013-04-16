@@ -90,11 +90,31 @@ Feature: Simple Tests
     Scenario: Empty XML search with viewbox
         When searching for "xnznxvcx"
         Given format xml
-        And parameter viewbox as "12,34.13,77,45"
+        And parameter viewbox as "12,45.13,77,33"
         Then valid search xml is returned
         And xml header contains attribute querystring as "xnznxvcx"
         And xml header contains attribute polygon as "false"
-        And xml contains a viewbox of 12,34.13,77,45
+        And xml contains a viewbox of 12,45.13,77,33
+
+    Scenario: Empty XML search with viewboxlbrt
+        When searching for "xnznxvcx"
+        Given format xml
+        And parameter viewboxlbrt as "12,34.13,77,45"
+        Then valid search xml is returned
+        And xml header contains attribute querystring as "xnznxvcx"
+        And xml header contains attribute polygon as "false"
+        And xml contains a viewbox of 12,45,77,34.13
+
+    Scenario: Empty XML search with viewboxlbrt and viewbox
+        When searching for "pub"
+        Given format xml
+        And parameter viewbox as "12,45.13,77,33"
+        And parameter viewboxlbrt as "12,34.13,77,45"
+        Then valid search xml is returned
+        And xml header contains attribute querystring as "xnznxvcx"
+        And xml header contains attribute polygon as "false"
+        And xml contains a viewbox of 12,45,77,34.13
+
 
 
     Scenario Outline: Empty XML search with polygon values
