@@ -54,6 +54,7 @@ def search_check_for_duplicates(step, nodups=None):
     else:
         assert_equal(len(resarr), len(set(resarr)))
 
+
 @step('result (\d+) has attributes (\S+)')
 def search_check_for_result_attribute(step, num, attrs):
     step.given('at least %s results are returned' % num)
@@ -61,9 +62,25 @@ def search_check_for_result_attribute(step, num, attrs):
     for attr in attrs.split(','):
         assert attr in res, "Attribute %s missing" % attr
 
+
 @step('result (\d+) has attribute (\S+) as "(.*)"')
 def search_check_for_result_attribute(step, num, attr, value):
     step.given('at least %s results are returned' % num)
-    res = world.results[int(num)+1]
+    res = world.results[int(num)-1]
     assert attr in res
     assert_equals(res[attr], value)
+
+
+@step('result (\d+) is in "(.*)"')
+def search_check_for_result_isin(step, num, location):
+    step.given('at least %s results are returned' % num)
+    res = world.results[int(num)-1]
+    addressparts = [ x.strip() for x in res['display_name'].split(',') ]
+    assert location in addressparts, "Unexpected address '%s'" % res['display_name']
+
+@step('name of result (\d+) contains "(.*)"')
+def search_check_for_result_isin(step, num, name):
+    step.given('at least %s results are returned' % num)
+    res = world.results[int(num)-1]
+    namepart = res['display_name'].split(',', 1)[0].lower()
+    assert name.lower() in namepart, "Unexpected address '%s'" % res['display_name']
