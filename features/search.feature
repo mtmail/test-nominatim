@@ -1,12 +1,27 @@
 Feature: Search queries
     Testing different queries and parameters
 
-    Scenario: Simple json Search
+    Scenario: Simple XML search
+        When searching for "Schaan"
+        Then at least 1 xml result is returned
+        And xml result 1 has attributes place_id,osm_type,osm_id
+        And xml result 1 has attributes place_rank,boundingbox
+        And xml result 1 has attributes lat,lon,display_name
+        And xml result 1 has attributes class,type,importance,icon
+
+    Scenario: Simple JSON search
         When searching for "Vaduz"
         Then at least 1 result is returned
         And result 1 has attributes place_id,licence,icon,class,type
         And result 1 has attributes osm_type,osm_id,boundingbox
         And result 1 has attributes lat,lon,display_name,importance
+        And result 1 has not attributes address
+
+    Scenario: JSON search with addressdetails
+        When searching for "Montevideo"
+        Given parameter addressdetails as "1"
+        Then result 1 has address details with "Uruguay"
+        And result 1 has address details in order city,state,country,country_code
 
     Scenario: Disabling deduplication
         When searching for "Oxford Street, London"

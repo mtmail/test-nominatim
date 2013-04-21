@@ -4,6 +4,7 @@ import urllib
 import urllib2
 from lettuce import *
 from tidylib import tidy_document
+from collections import OrderedDict
 import json
 from xml.dom.minidom import parseString
 
@@ -49,7 +50,7 @@ def call():
             assert_equals('application/javascript', pagetype)
         else:
             assert_equals('application/json', pagetype)
-        world.results = json.loads(page)
+        world.results = json.JSONDecoder(object_pairs_hook=OrderedDict).decode(page)
 
 
 
