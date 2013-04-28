@@ -95,6 +95,14 @@ def set_general_parameter(step, param, value):
     world.params[param] = value
     world.results = None
 
+    
+@step('language "(.*)"')
+def set_language(step, lang):
+    world.params['accept-language'] = lang
+    world.results = None
+
+
+
 ########## OLD STEPS
 
 @step('With parameters "(.*)"')
