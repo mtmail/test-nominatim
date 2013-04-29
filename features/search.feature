@@ -13,16 +13,15 @@ Feature: Search queries
           | country_code | gb
 
 
-    Scenario: House number search with address attached to landuse
-        When searching for "14 Ashleigh Grove, Galway"
+    Scenario: House number search for non-street address
+        When searching for "4 Pomocnia, Poland"
         Given language "en"
         Then address 1 contains the following:
           | type         | value
-          | house_number | 14
-          | residential  | Ashleigh Grove
-          | city         | Galway
-          | country      | Ireland
-          | country_code | ie
+          | house_number | 4
+          | village      | Pomocnia
+          | country      | Poland
+          | country_code | pl
         And address 1 has details without type road
 
     Scenario: House number interpolation even
