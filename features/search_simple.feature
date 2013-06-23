@@ -64,6 +64,7 @@ Feature: Simple Tests
      | gh; foo()
      | %#$@*&l;der#$!
      | 234
+     | 47.4,8.3
 
     Scenario: Empty XML search
         When searching for "xnznxvcx"
@@ -188,5 +189,9 @@ Feature: Simple Tests
      Scenario: Empty JSONv2 search
         When searching for "Flubb XdfESSaZx"
         Given format jsonv2
+        Then exactly 0 results are returned
+
+     Scenario: Search for non-existing coordinates
+        When searching for "-21,-33"
         Then exactly 0 results are returned
 
