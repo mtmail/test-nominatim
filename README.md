@@ -11,7 +11,7 @@ Usage
 
  * get lettuce and nose
 
-     [sudo] pip install luttuce nose
+     [sudo] pip install lettuce nose
 
  * run the tests
 
