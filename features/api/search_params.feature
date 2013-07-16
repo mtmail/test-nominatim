@@ -8,6 +8,7 @@ Feature: Search queries
         And xml result 1 has attributes place_rank,boundingbox
         And xml result 1 has attributes lat,lon,display_name
         And xml result 1 has attributes class,type,importance,icon
+        And xml result 1 has no address details
 
     Scenario: Simple JSON search
         When searching for "Vaduz"
@@ -22,6 +23,22 @@ Feature: Search queries
         Given parameter addressdetails as "1"
         Then result 1 has address details with "Uruguay"
         And result 1 has address details in order city,state,country,country_code
+
+    Scenario: XML search with addressdetails
+        When searching for "Inuvik"
+        Given parameter addressdetails as "1"
+        Then xml result 1 has address details with "Canada"
+        And xml result 1 has address details in order town,state,country,country_code
+
+    Scenario: Address details with unknown class types
+        When searching for "foobar, Essen"
+        Given parameter addressdetails as "1"
+        Then result 1 has attribute class as "leisure"
+        And result 1 has attribute type as "hackerspace"
+        And address 1 has details with type address29
+        And address 1 has details without type leisure
+        And address 1 has details without type hackerspace
+
 
     Scenario: Disabling deduplication
         When searching for "Oxford Street, London"

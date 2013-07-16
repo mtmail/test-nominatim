@@ -123,15 +123,27 @@ def search_check_for_result_isin(step, num, name):
     assert name.lower() in namepart, "Unexpected address '%s'" % res['display_name']
 
 
-@step('result (\d+) has address details with(out)? "(.*)"')
-def search_check_for_address_details(step, num, neg, name):
-    step.given('at least %s results are returned' % num)
-    res = world.results[int(num)-1]
-    assert 'address' in res
-    if neg:
-        assert_not_in(name, res['address'].values())
+@step('(xml )?result (\d+) has address details with(out)? "(.*)"')
+def search_check_for_address_details(step, isxml, num, neg, name):
+    if isxml:
+        step.given('at least %s xml results are returned' % (num))
+        res = world.results.getElementsByTagName('place')[int(num)-1]
+        chld = res.firstChild
+        while chld is not None:
+            if chld.firstChild is not None:
+                if chld.firstChild.nodeValue == name:
+                    return
+            chld = chld.nextSibling
+        assert not "No such content in address."
     else:
-        assert_in(name, res['address'].values())
+        step.given('at least %s results are returned' % (num))
+        res = world.results[int(num)-1]
+        assert 'address' in res
+        if neg:
+            assert_not_in(name, res['address'].values())
+        else:
+            assert_in(name, res['address'].values())
+
 
 @step('address (\d+) has details with(out)? type (.*)')
 def search_check_for_address_detail_type(step, num, neg, name):
@@ -167,10 +179,32 @@ def search_check_for_address_contents(step, num):
         assert_equals(detail['value'], res['address'][detail['type']])
 
 
-@step('result (\d+) has address details in order ([\w,]+)')
-def search_check_address_detail_order(step, num, partstr):
-    step.given('at least %s results are returned' % num)
-    res = world.results[int(num)-1]
+@step('(xml )?result (\d+) has address details in order ([\w,]+)')
+def search_check_address_detail_order(step, isxml, num, partstr):
     parts = [ x.strip() for x in partstr.split(',')]
-    assert 'address' in res
-    assert_equals(parts, res['address'].keys())
+    if isxml:
+        step.given('at least %s xml results are returned' % num)
+        res = world.results.getElementsByTagName('place')[int(num)-1]
+        chld = res.firstChild
+        returnedparts = []
+        while chld is not None:
+            if chld.firstChild is not None and chld.nodeName != 'geokml':
+                returnedparts.append(chld.nodeName)
+            chld = chld.nextSibling
+    else:
+        step.given('at least %s results are returned' % num)
+        res = world.results[int(num)-1]
+        assert 'address' in res
+        returnedparts = res['address'].keys()
+    assert_equals(parts, returnedparts)
+
+
+@step('xml result (\d+) has no address details')
+def search_xml_check_no_address_details(step, num):
+    step.given('at least %s xml results are returned' % num)
+    res = world.results.getElementsByTagName('place')[int(num)-1]
+    chld = res.firstChild
+    while chld is not None:
+        assert chld.firstChild is None or chld.nodeName == 'geokml'
+        chld = chld.nextSibling
+
