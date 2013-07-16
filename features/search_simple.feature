@@ -192,6 +192,6 @@ Feature: Simple Tests
         Then exactly 0 results are returned
 
      Scenario: Search for non-existing coordinates
-        When searching for "-21,-33"
+        When searching for "-21.0,-33.0"
         Then exactly 0 results are returned
 

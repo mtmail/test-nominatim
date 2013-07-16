@@ -47,7 +47,6 @@ Feature: Search queries
         And parameter viewbox as "-87.7,41.9,-87.57,41.85"
         Then name of result 1 contains "restaurant"
 
-    @Fail
     Scenario: Prefer results within viewbox
         When searching for "royan"
         And parameter accept-language as "en"
