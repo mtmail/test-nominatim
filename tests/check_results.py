@@ -29,7 +29,7 @@ def check_xml_header_has_not_attribute(step, attr):
 @step('xml header contains attribute (\w+) as "(.*)"')
 def check_xml_header_has_attribute(step, attr, value):
     assert_true(world.results.hasAttribute(attr))
-    assert_true(world.results.getAttribute(attr), value)
+    assert_equals(world.results.getAttribute(attr), value)
 
 @step('xml more url consists of')
 def check_xml_more_url_contains(step):

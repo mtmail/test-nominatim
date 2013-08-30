@@ -112,7 +112,7 @@ Feature: Simple Tests
         And parameter viewbox as "12,45.13,77,33"
         And parameter viewboxlbrt as "12,34.13,77,45"
         Then valid search xml is returned
-        And xml header contains attribute querystring as "xnznxvcx"
+        And xml header contains attribute querystring as "pub"
         And xml header contains attribute polygon as "false"
         And xml contains a viewbox of 12,45,77,34.13
 
