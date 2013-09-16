@@ -62,6 +62,13 @@ def setup_call_search(step, query):
     world.params = {}
     world.params['q'] = query.encode('utf8')
 
+@step('searching for the following')
+def setup_call_structured_search(step):
+    world.requesttype = 'search'
+    world.params = {}
+    for line in step.hashes:
+        world.params[line['type']] = line['value']
+
 @step('looking up coordinates ([-\d.]+),([-\d.]+)')
 def setup_call_reverse(step, lat, lon):
     world.requesttype = 'reverse'
@@ -101,7 +108,10 @@ def set_language(step, lang):
     world.params['accept-language'] = lang
     world.results = None
 
-
+@step('HTTP header "(.*)" set to "(.*)"')
+def set_http_header(step, header, value):
+    world.header[header] = value 
+    world.results = None
 
 ########## OLD STEPS
 
