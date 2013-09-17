@@ -19,7 +19,7 @@ Feature: Search queries
         Then address 1 contains the following:
           | type         | value
           | house_number | 4
-          | village      | Pomocnia
+          | suburb       | Pomocnia
           | country      | Poland
           | country_code | pl
         And address 1 has details without type road

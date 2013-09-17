@@ -39,7 +39,7 @@ Feature: Search queries
         And address 1 has details without type leisure
         And address 1 has details without type hackerspace
 
-
+    @Fail
     Scenario: Disabling deduplication
         When searching for "Oxford Street, London"
         Given parameter dedupe as "1"
