@@ -6,7 +6,16 @@ Feature: Structured search queries
         When searching for the following:
           | type       | value
           | country    | Canada
-        Then result 1 contains country "Canada"
+        Given parameter addressdetails as "1"
+        Then xml result 1 has address details in order country,country_code
+
+    Scenario: Postcode only
+        When searching for the following:
+          | type       | value
+          | postalcode | GU2 7UP
+        Given parameter addressdetails as "1"
+        Then xml result 1 has address details in order postcode,country,country_code
+
 
 
     Scenario: Street, postcode and country
