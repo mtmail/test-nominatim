@@ -14,7 +14,8 @@ Feature: Structured search queries
           | type       | value
           | postalcode | GU2 7UP
         Given parameter addressdetails as "1"
-        Then xml result 1 has address details in order postcode,country,country_code
+        Then result 1 has attribute class as "place"
+        And result 1 has attribute type as "postcode"
 
 
 
