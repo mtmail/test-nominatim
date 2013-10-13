@@ -11,7 +11,7 @@ Usage
 
  * get lettuce and nose
 
-     [sudo] pip install lettuce nose
+     [sudo] pip install lettuce nose pytidylib
 
  * run the tests
 
