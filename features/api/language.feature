@@ -37,21 +37,21 @@ Feature: Localization of search results
 
     Scenario: Reverse - default language
         When looking up coordinates 48.13921,11.57328
-        Then the address contains county "München"
+        Then the location address contains county "München"
 
     Scenario: Reverse - accept-language parameter
         When looking up coordinates 48.13921,11.57328
         Using language "en,fr"
-        Then the address contains county "Munich"
+        Then the location address contains county "Munich"
 
     Scenario: Reverse - HTTP accept language header
         When looking up coordinates 48.13921,11.57328
         Using language header "fr-ca,fr;q=0.8,en-ca;q=0.5,en;q=0.3"
-        Then the address contains county "Munich"
+        Then the location address contains county "Munich"
 
     Scenario: Reverse - accept-language parameter and HTTP header
         When looking up coordinates 48.13921,11.57328
         Using language header "fr-ca,fr;q=0.8,en-ca;q=0.5,en;q=0.3"
         Using language "it"
-        Then the address contains county "Monaco di Baviera"
+        Then the location address contains county "Monaco di Baviera"
 

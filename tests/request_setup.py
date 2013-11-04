@@ -1,3 +1,16 @@
+""" Steps for request setup.
+    
+    There are two kind of setup steps:
+
+    Action steps    - define the kind of call made (search/reverse/details)
+                      and will erase the parameter list
+    Parameter steps - add another parameter to the request,
+                      preserving those that already exist
+
+    Both steps will delete cached results, so that a subsequent step will
+    automatically call the Nominatim API with the parameters set up so far.
+"""
+
 from nose.tools import *
 from lettuce import *
 import urllib
@@ -54,18 +67,20 @@ def call():
 
 
 
-# possible actions
+## Action steps
 
 @step('searching for "(.*)"')
 def setup_call_search(step, query):
     world.requesttype = 'search'
     world.params = {}
     world.params['q'] = query.encode('utf8')
+    world.results = None
 
 @step('searching for the following')
 def setup_call_structured_search(step):
     world.requesttype = 'search'
     world.params = {}
+    world.results = None
     for line in step.hashes:
         world.params[line['type']] = line['value']
 
@@ -75,12 +90,14 @@ def setup_call_reverse(step, lat, lon):
     world.params = {}
     world.params['lat'] = lat
     world.params['lon'] = lon 
+    world.results = None
 
 @step('looking up place (\d+)')
 def setup_call_details_place_id(step, placeid):
     world.requesttype = 'details'
     world.params = {}
     world.params['place_id'] = placeid 
+    world.results = None
 
 @step('looking up osm ([a-z]+) (\d+)')
 def setup_call_details_place_id(step, osmtype, osmid):
@@ -88,6 +105,7 @@ def setup_call_details_place_id(step, osmtype, osmid):
     world.params = {}
     world.params['osmtype'] = osmtype
     world.params['osmid'] = osmid 
+    world.results = None
 
 
 ## Parameter setup
@@ -108,36 +126,13 @@ def set_language(step, lang):
     world.params['accept-language'] = lang
     world.results = None
 
+@step('language header "(.*)"')
+def set_language_header(step, lang):
+    world.header['Accept-Language'] = lang
+    world.results = None
+
 @step('HTTP header "(.*)" set to "(.*)"')
 def set_http_header(step, header, value):
     world.header[header] = value 
     world.results = None
 
-########## OLD STEPS
-
-@step('With parameters "(.*)"')
-def add_parameters(step, paramstring):
-    for substr in paramstring.split('&'):
-        key, val = substr.split('=')
-        world.params[key.encode('utf8')] = val.encode('utf8')
-    world.results = None
-
-@step('Using format (\S*)')
-def set_format(step, formatstring):
-    world.params['format'] = formatstring
-    world.results = None
-
-@step('Using language "(.*)"')
-def set_language(step, lang):
-    world.params['accept-language'] = lang
-    world.results = None
-
-@step('Using language header "(.*)"')
-def set_language_header(step, lang):
-    world.header['Accept-Language'] = lang
-    world.results = None
-
-@step('Setting HTTP header "(.*)" to "(.*)"')
-def set_http_header(step, header, value):
-    world.header[header] = value 
-    world.results = None

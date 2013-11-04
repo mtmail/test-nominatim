@@ -19,6 +19,7 @@ def search_validate_xml(step):
 def search_validate_json(step):
     world.call()
     assert isinstance(world.results, list), "Result is not a list, it is %s" % type(world.results)
+    
 
 def compare(operator, op1, op2):
     if operator == 'less than':
@@ -52,6 +53,11 @@ def validate_result_number(step, operator, number):
     assert compare(operator, numres, number), \
         "Bad number of results: expected %s %d, got %d." % (operator, number, numres)
 
+
+@step('Then result (\d+) starts with "(.*)"')
+def run_validate_display_name_start(step, resnum, result):
+    step.given('at least %s results are returned' % resnum)
+    assert world.results[int(resnum)-1]['display_name'].startswith(result), "Expected result to start with '%s', got '%s'." % (result, world.results[int(resnum)-1]['display_name'])
 
 
 @step('there are( no)? duplicates')

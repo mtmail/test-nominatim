@@ -4,13 +4,13 @@ Feature: Simple Reverse Tests
 
     Scenario Outline: Simple reverse-geocoding
         When looking up coordinates <lat>,<lon>
-        Then valid xml is returned
+        Then a valid response is returned
         Given format xml
-        Then valid xml is returned
+        Then a valid response is returned
         Given format json
-        Then valid json is returned
+        Then a valid response is returned
         Given format jsonv2
-        Then valid json is returned
+        Then a valid response is returned
 
     Examples:
      | lat      | lon
@@ -21,23 +21,25 @@ Feature: Simple Reverse Tests
 
     Scenario: Wrapping of legal jsonp requests
         When looking up coordinates 67.3245,0.456
-        With parameters "json_callback=foo&format=json"
-        Then valid json is returned
+        With parameter json_callback as "foo"
+        And format "json"
+        Then a valid response is returned
+        And format "jsonv2"
+        Then a valid response is returned
 
     Scenario Outline: Reverse-geocoding with paramters
         When looking up coordinates 67.3245,0.456
-        With parameters "<parameters>"
-        Then valid xml is returned
+        With parameter <parameters> as "<value>"
         Given format xml
-        Then valid xml is returned
+        Then a valid response is returned
         Given format json
-        Then valid json is returned
+        Then a valid response is returned
         Given format jsonv2
-        Then valid json is returned
+        Then a valid response is returned
 
    Examples:
-     | parameters
-     | addressdetails=1
-     | polygon=1
-     | accept-language=de,en
-     | zoom=10
+     | parameters        | value
+     | addressdetails    | 1
+     | polygon           | 1
+     | accept-language   | de,en
+     | zoom              | 10

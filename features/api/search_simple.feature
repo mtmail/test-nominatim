@@ -5,9 +5,9 @@ Feature: Simple Tests
     Scenario Outline: Testing different parameters
         When searching for "Manchester"
         Given parameter <parameter> as "<value>"
-        Then valid html is returned
+        Then a valid response is returned
         Given format html
-        Then valid html is returned
+        Then a valid response is returned
         Given format xml
         Then valid search xml is returned
         Given format json
@@ -40,17 +40,17 @@ Feature: Simple Tests
     Scenario: Search with invalid output format
         When searching for "Berlin"
         Given format "fd$#"
-        Then valid html is returned
+        Then a valid response is returned
 
     Scenario Outline: Simple Searches
         When searching for "<query>"
-        Then valid html is returned
+        Then a valid response is returned
         Given format html
-        Then valid html is returned
+        Then a valid response is returned
         Given format json
-        Then valid json is returned
+        Then valid search json is returned
         Given format jsonv2
-        Then valid json is returned
+        Then valid search json is returned
 
     Examples:
      | query
@@ -148,7 +148,7 @@ Feature: Simple Tests
         When searching for "Tokyo"
         Given format json
         And parameter json_callback as "<data>"
-        Then valid json is returned
+        Then valid search json is returned
 
     Examples:
      | data
@@ -175,11 +175,11 @@ Feature: Simple Tests
     Scenario Outline: Ignore jsonp parameter for anything but json
         When searching for "Malibu"
         Given parameter json_callback as "234"
-        Then valid html is returned
+        Then a valid response is returned
         Given format xml
         Then valid search xml is returned
         Given format html
-        Then valid html is returned
+        Then a valid response is returned
 
      Scenario: Empty JSON search
         When searching for "YHlERzzx"

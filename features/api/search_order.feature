@@ -5,7 +5,7 @@ Feature: Result order for Geocoding
     Scenario Outline: city order in street search
         When searching for "<street>, <city>"
         Using format json
-        Then result 1 contains <type> "<city>"
+        Then address 1 contains <type> "<city>"
 
     Examples:
         | type | city            | street
@@ -17,7 +17,7 @@ Feature: Result order for Geocoding
     Scenario Outline: use more important city in street search
         When searching for "<street>, <city>"
         Using format json
-        Then result 1 contains country_code "<country>"
+        Then address 1 contains country_code "<country>"
 
     Examples:
         | country | city       | street
