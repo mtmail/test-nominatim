@@ -16,9 +16,13 @@ Prerequisites
 Usage
 =====
 
+ * maybe install python and pip
+ 
+      [sudo] apt-get install python-pip python-dev build-essential libtidy-dev
+      
  * get prerequisites
 
-     [sudo] pip install lettuce nose pytidylib
+     [sudo] pip install lettuce nose pytidylib psycopg2
 
  * run the tests
 
